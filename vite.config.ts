@@ -6,6 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    port: 3000
+    port: 3000,
+    allowedHosts: [
+      'speech-Appli-zUWoLIz6kwpm-62646098.ap-southeast-1.elb.amazonaws.com',
+      '.ap-southeast-1.elb.amazonaws.com',
+    ]
   }
 })
