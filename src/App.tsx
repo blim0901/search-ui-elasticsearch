@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, CSSProperties } from 'react';
 import { SearchProvider, Results, SearchBox, PagingInfo, ResultsPerPage, Paging, Facet } from "@elastic/react-search-ui";
-import { Layout } from "@elastic/react-search-ui-views";
 import "@elastic/react-search-ui-views/lib/styles/styles.css";
 import ElasticsearchAPIConnector from "@elastic/search-ui-elasticsearch-connector";
 import { SearchDriverOptions, FacetConfiguration } from "@elastic/search-ui";
@@ -50,7 +49,8 @@ const config: SearchDriverOptions = {
       duration: { raw: {} },
       age: { raw: {} },
       gender: { raw: {} },
-      accent: { raw: {} }
+      accent: { raw: {} },
+      text: { raw: {} }
     },
     facets: {
       age: { type: "value" } as FacetConfiguration,
@@ -68,6 +68,28 @@ const config: SearchDriverOptions = {
   }
 };
 
+const customStyles: Record<string, CSSProperties> = {
+  container: {
+    maxWidth: '100vw',
+    width: '100vw',
+    overflowX: 'hidden',
+    backgroundColor: 'white',
+    minHeight: '100vh'
+  },
+  layout: {
+    display: 'grid',
+    gridTemplateColumns: 'minmax(200px, 200px) minmax(0, 1fr)',
+    padding: '1rem',
+    overflowY: 'auto'
+  },
+  sidebar: {
+    width: '180px',
+    padding: '1rem',
+    backgroundColor: 'white',
+    borderRight: '1px solid #e5e7eb'
+  },
+};
+
 const App: React.FC = () => {
   useEffect(() => {
     testConnection();
@@ -77,38 +99,44 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <SearchProvider 
-      config={{
-        ...config,
-        debug: true
-      }}
-    >
-      <Layout
-        header={<SearchBox debounceLength={0} />}
-        bodyContent={
-          <Results
-            titleField="generated_text"
-            shouldTrackClickThrough={true}
-            className="text-black"
-          />
-        }
-        bodyHeader={
-          <>
-            <PagingInfo />
-            <ResultsPerPage />
-          </>
-        }
-        bodyFooter={<Paging />}
-        sideContent={
-          <div>
-            <Facet field="accent" label="Accent" />
-            <Facet field="gender" label="Gender" />
-            <Facet field="age" label="Age" />
-            <Facet field="duration" label="Duration" />
+    <div style={customStyles.container}>
+      <SearchProvider 
+        config={{
+          ...config,
+          debug: true
+        }}
+      >
+        <div style={customStyles.layout}>
+          <div className="sui-layout-sidebar" style={customStyles.sidebar}>
+            <div>
+              <Facet field="accent" label="Accent" />
+              <Facet field="gender" label="Gender" />
+              <Facet field="age" label="Age" />
+              <Facet field="duration" label="Duration" />
+            </div>
           </div>
-        }
-      />
-    </SearchProvider>
+          <div className="sui-layout-main">
+            <div className="sui-layout-main-header">
+              <SearchBox debounceLength={0} />
+              <div className="sui-layout-main-header-info">
+                <PagingInfo />
+                <ResultsPerPage />
+              </div>
+            </div>
+            <div>
+              <Results
+                titleField="generated_text"
+                shouldTrackClickThrough={true}
+                className="text-black"
+              />
+            </div>
+            <div className="sui-layout-main-footer">
+              <Paging />
+            </div>
+          </div>
+        </div>
+      </SearchProvider>
+    </div>
   );
 };
 
